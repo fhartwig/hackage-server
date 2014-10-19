@@ -10,6 +10,7 @@ import qualified Distribution.Server.Users.Users as Users
 import Distribution.Server.Users.Users (Users)
 import Distribution.Server.Pages.Template
          ( hackagePageWithHead )
+import Distribution.Server.Util.Rss (mkChannelElems)
 
 import Distribution.Package
          ( PackageIdentifier, packageName, packageVersion, PackageName(..) )
@@ -81,22 +82,10 @@ recentFeed users hostURI now pkgs = RSS
   "Recent additions"
   (hostURI { uriPath = recentAdditionsURL})
   desc
-  (channel now)
+  (mkChannelElems now)
   [ releaseItem users hostURI pkg | pkg <- take 20 pkgs ]
   where
     desc = "The 20 most recent additions to Hackage, the Haskell package database."
-
-channel :: UTCTime -> [RSS.ChannelElem]
-channel now =
-  [ RSS.Language "en"
-  , RSS.ManagingEditor email
-  , RSS.WebMaster email
-  , RSS.ChannelPubDate now
-  , RSS.LastBuildDate   now
-  , RSS.Generator "rss-feed"
-  ]
-  where
-    email = "duncan@haskell.org (Duncan Coutts)"
 
 releaseItem :: Users -> URI -> PkgInfo -> [RSS.ItemElem]
 releaseItem users hostURI pkgInfo@(PkgInfo {

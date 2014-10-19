@@ -44,6 +44,7 @@ import Distribution.Server.Features.AdminFrontend       (initAdminFrontendFeatur
 import Distribution.Server.Features.HoogleData          (initHoogleDataFeature)
 #endif
 import Distribution.Server.Features.ServerIntrospect (serverIntrospectFeature)
+import Distribution.Server.Features.PackageFeed (initPackageFeedFeature)
 
 #ifdef DEBUG
 import Distribution.Server.Features.Crash
@@ -211,6 +212,11 @@ initHackageFeatures env@ServerEnv{serverVerbosity = verbosity} = do
                            coreFeature
                            documentationCoreFeature
                            tarIndexCacheFeature
+
+    packageFeedFeature <- initPackageFeedFeature env
+                            usersFeature
+                            coreFeature
+
 #endif
 
     -- The order of initialization above should be the same as
@@ -246,6 +252,7 @@ initHackageFeatures env@ServerEnv{serverVerbosity = verbosity} = do
          , editCabalFeature
          , adminFrontendFeature
          , getFeatureInterface hoogleDataFeature
+         , getFeatureInterface packageFeedFeature
 #endif
          , staticFilesFeature
          , serverIntrospectFeature allFeatures

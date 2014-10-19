@@ -31,6 +31,7 @@ import HttpUtils ( isOk
                  , Authorization(..)
                  )
 import HackageClientUtils
+import qualified Text.XML.Light as XML
 
 
 main :: IO ()
@@ -214,6 +215,13 @@ runPackageTests = do
        xs <- getGroup "/package/testpackage/maintainers/.json"
        unless (map userName (groupMembers xs) == ["HackageTestUser1"]) $
            die "Bad maintainers list"
+    do info "Getting testpackage rss feed"
+       rss <- getUrl NoAuth "/package/testpackage/feed.rss"
+       let rssElems = XML.onlyElems (XML.parseXML rss)
+       die (show rssElems)
+           
+        -- TODO: parse xml that we get, make sure it makes sense
+            -- (for an example, see tests/MailUtils.hs)
   where
     (_,                             testpackageTarFileContent,
      testpackageCabalIndexFilename, testpackageCabalFile,
